@@ -1,23 +1,8 @@
 <?php
 
-/*
+error_reporting(0);
+
 header("Content-Type: application/json");
-
-$f = fopen("testout.json", "r");
-$data = json_decode(fread($f, filesize("testout.json")), true);
-fclose($f);
-
-$rp = [];
-
-foreach($data as $dat) {
-    $rp[] = [
-        'id' => $dat['id'],
-        'title' => $dat['titleMm']
-    ];
-}
-
-echo json_encode($rp);
-*/
 
 function req(string $url, string $method = 'GET', array $headers = [], string $body = '')
 {
