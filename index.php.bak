@@ -1,0 +1,178 @@
+<?php
+
+//require "./_data.php";
+
+
+
+/*
+$f = fopen("testout.json", "r");
+$data = json_decode(fread($f, filesize("testout.json")), true);
+fclose($f);
+
+if (isset($_SERVER["PATH_INFO"]) and $_SERVER["PATH_INFO"] == "/watch") {
+	$id = $_GET["id"];
+	if (isset($_GET["series"])) {
+		echo "Load series";
+	}
+	$src = json_decode(watch_movie($id), true)["videoUrl"];
+	echo <<<LABEL
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Player</title>
+	    <script src="./playerjs.js" type="text/javascript"></script>
+	    <style>
+	        #player {
+	            width: 98%;
+	            justify-self: center;
+	        }
+	    </style>
+	</head>
+	<body>
+	    <div id="player"></div>
+	    <script>
+	        var player = new Playerjs(
+	            {
+	                id:"player", 
+	                autoplay: 1,
+	                file: "$src"
+	                	//[
+	                    //{"title":"Test 1","file":"https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_5MB.mp4"},
+	                    //{"title":"Test 2","file":"<?php echo "./test.mp4"; ?>", "id": "1"}
+	                //],
+	                //plstart: '1'
+	            }
+	        );
+	    </script>
+	</body>
+	</html>
+	LABEL;
+} elseif (isset($_SERVER["PATH_INFO"]) and $_SERVER["PATH_INFO"] == "series") {
+	$_data = [];
+	$id = $_GET["id"];
+	foreach ($data as $dat) {
+		if ($dat["id"] == $id) {
+			$_data = $dat["episodes"];
+		}
+	}
+	$items = "";
+    for ($i = 0; $i < count($_data); $i++) {
+        $items = $items . $_data[$i]['titleMm'] . '<br>';
+    }
+	echo <<<LABEL
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Series</title>
+	    <style>
+	    
+	    </style>
+	</head>
+	<body>
+	    <div id="content"></div>
+	    <script>
+	        $items
+	    </script>
+	</body>
+	</html>
+	LABEL;
+} else {
+
+    $page = 0;
+    $current = 0;
+    $start = 0;
+    $end = 10;
+
+    if (isset($_GET["page"])) {
+	    $page = (int)$_GET["page"];
+	    $start = $page * 10 ;
+	    $end = ($page + 1) * 10;
+    }
+
+    $items = "";
+
+    foreach ($data as $dat) {
+	    if ($current >= $start and $current < $end ) {
+		    $click = 'onclick="series(\'' . $dat['id'] . '\')"';
+		    if ($dat["type"] == "movie") {
+			    $click = 'onclick="pl(\'' . $dat["contentId"] . '\')"';
+		    } 
+		    $item = '<div class="item" ' . $click . " >";
+		    
+		    $item = $item . "<img src=\"{$dat['posterLandscape']}\" alt=\"{$dat['titleMm']}\"></img>";
+		    $item = $item . "<span class=\"title\">" . $dat["titleMm"] . "</span>";
+		    $item = $item . "</div>";
+		    $items = $items . $item;
+	    }
+	    $current += 1;
+    }
+
+    $display_page = $page +1;
+
+    $nav = <<<LABEL
+    <div class="nav">
+	    <span onclick="pre()">Previous</span>
+	    <span>Page: $display_page</span>
+	    <span  onclick="next()">Next</span>
+    </div>
+    LABEL;
+
+    echo <<<LABEL
+    <!DOCTYPE html>
+    <html lang="en">
+	    <head>
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		    <title>Mahar Free</title>
+		    <link rel="stylesheet" href="./style.css">
+	    </head>
+	    <body>
+		    <header>
+			    <span onclick="home()"><h1>Mahar Free</h1></span>
+			    <!--<span>Search</span>-->
+		    </header>
+		    <input type="text" placeholder="Search...">
+		    $nav
+		    <div class="content">
+			    $items
+		    </div>
+		    $nav
+		    <script>
+		    let page = $page;
+		    function home() {
+			    window.open("./", "_self");
+		    }
+		    function pre() {
+			    if (page > 1) {
+				    window.open("./?page="+(page-1), "_self");
+			    } else {
+				    window.open("./", "_self");
+			    }
+		    }
+		    function next() {
+			    window.open("./?page="+(page+1), "_self");
+		    }
+            function series(id) {
+                window.open("./series/?id="+id+"&series", "_self");
+            }
+		    function pl(id) {
+			    window.open("./watch?id="+id, "_self");
+		    }
+		    function notsup() {
+			    alert("Currently playing series are not implemented yet 🤓.");
+		    }
+		    </script>
+		    <footer>
+		    <div class="web-name center bold">Mahar &copy; (Free) &trade;</div>
+		    <div class="center bold">
+			    2026
+		    </div>
+		    </footer>
+	    </body>
+    </html>
+    LABEL;
+}
+*/

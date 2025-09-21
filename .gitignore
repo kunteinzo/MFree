@@ -1,0 +1,7 @@
+*.mp4
+*.lock
+
+.venv
+__pycache__
+token
+vendor
