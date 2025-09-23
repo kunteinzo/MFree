@@ -30,7 +30,6 @@ function req(string $url, string $method = 'GET', array $headers = [], string $b
     return $response;
 }
 
-
 function token(): string|null
 {
     try {
@@ -54,9 +53,6 @@ function details(): array
     fclose($file);
     return $con;
 }
-
-
-header("Content-Type: application/json");
 
 class Item
 {
@@ -99,39 +95,54 @@ class Item
         $this->casts = $casts;
         $this->duration = $duration;
     }
+
+    public static function all()
+    {
+        $all = [];
+        foreach (details() as $item) {
+            $it = new Item(
+                id:$item['id'],
+                contentId:'',
+                type:$item['type'],
+                titleEn:$item['titleEn'],
+                titleMm:$item['titleMm'],
+                posterPortrait:$item['posterPortrait']?: '',
+                posterLandscape:$item['posterLandscape'] ?: '',
+                tags: [], casts: [], duration: $item['duration'],
+                description:$item['overview']['descriptionMm']
+            );
+            if ($it->type == 'series') {
+                $it->contentId = $item['seriesId'];
+            } else {
+                $it->contentId = $item['contentId'];
+            }
+            $it->fileSize = [
+                'sd'=>$item['sdFileSize'],
+                'hd'=>$item['hdFileSize'],
+                'fullHd'=>$item['fullHdFileSize']
+            ];
+            foreach ($item['categories'] as $cat) {
+                $it->tags[] = $cat['nameMm'];
+            }
+            foreach ($item['artists'] as $as) {
+                $it->casts[] = $as['nameMm'];
+            }
+            $all[] = $it;
+        }
+        return $all;
+    }
 }
 
-$all = [];
-
-foreach (details() as $item) {
-    $it = new Item(
-        id:$item['id'],
-        contentId:'',
-        type:$item['type'],
-        titleEn:$item['titleEn'],
-        titleMm:$item['titleMm'],
-        posterPortrait:$item['posterPortrait']?: '',
-        posterLandscape:$item['posterLandscape'] ?: '',
-        tags: [], casts: [], duration: $item['duration'],
-        description:$item['overview']['descriptionMm']
-    );
-    if ($it->type == 'series') {
-        $it->contentId = $item['seriesId'];
-    } else {
-        $it->contentId = $item['contentId'];
-    }
-    $it->fileSize = [
-        'sd'=>$item['sdFileSize'],
-        'hd'=>$item['hdFileSize'],
-        'fullHd'=>$item['fullHdFileSize']
-    ];
-    foreach ($item['categories'] as $cat) {
-        $it->tags[] = $cat['nameMm'];
-    }
-    foreach ($item['artists'] as $as) {
-        $it->casts[] = $as['nameMm'];
-    }
-    $all[] = $it;
+if (isset($_SERVER['PATH_INFO']) and $_SERVER['PATH_INFO'] = '/all') {
+    echo json_encode(Item::all(), JSON_UNESCAPED_UNICODE);
 }
 
-echo json_encode($all, JSON_UNESCAPED_UNICODE);
+function home()
+{
+    $res = [];
+    $token = token();
+    do {
+        req('',headers:['Authorization: Bearer '.$token]);
+    } while (True);
+    # TODO: here
+}
