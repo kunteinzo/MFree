@@ -132,21 +132,26 @@ class Item
     }
 }
 
+/*
 if (isset($_SERVER['PATH_INFO']) and $_SERVER['PATH_INFO'] = '/all') {
     echo json_encode(Item::all(), JSON_UNESCAPED_UNICODE);
 }
+*/
 
 function home()
 {
-    #$res = [];
+    $res = [];
+    $re = [];
     $token = token();
     $n = 1;
-    do {
-        $res = req("/display/v1/moviebuilder?pageNumber=$n",headers:['Authorization: Bearer '.$token]);
-        echo $res;
-        break;
-    } while (True);
-    # TODO: here
+    while (true) {
+        $re = json_decode(req("/display/v1/moviebuilder?pageNumber=".$n, headers:['Authorization: Bearer '.$token]), true)["value"];
+        $re1 = 
+        
+        $res[] = $re;
+        $n++;
+    } while (count($re) != 0);
+    echo json_encode($res);
 }
 
 home();
