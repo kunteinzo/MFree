@@ -6,7 +6,6 @@ header("Content-Type: application/json");
 
 function req(string $url, string $method = 'GET', array $headers = [], string $body = '')
 {
-
     $curl = curl_init();
     curl_setopt_array($curl, [
         CURLOPT_URL => 'https://api.maharprod.com' . $url,
@@ -139,10 +138,15 @@ if (isset($_SERVER['PATH_INFO']) and $_SERVER['PATH_INFO'] = '/all') {
 
 function home()
 {
-    $res = [];
+    #$res = [];
     $token = token();
+    $n = 1;
     do {
-        req('',headers:['Authorization: Bearer '.$token]);
+        $res = req("/display/v1/moviebuilder?pageNumber=$n",headers:['Authorization: Bearer '.$token]);
+        echo $res;
+        break;
     } while (True);
     # TODO: here
 }
+
+home();
