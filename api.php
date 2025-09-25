@@ -80,8 +80,7 @@ class Item
         array $casts,
         string $duration,
         string $description
-        )
-    {
+    ) {
         $this->id = $id;
         $this->contentId = $contentId;
         $this->type = $type;
@@ -100,15 +99,17 @@ class Item
         $all = [];
         foreach (details() as $item) {
             $it = new Item(
-                id:$item['id'],
-                contentId:'',
-                type:$item['type'],
-                titleEn:$item['titleEn'],
-                titleMm:$item['titleMm'],
-                posterPortrait:$item['posterPortrait']?: '',
-                posterLandscape:$item['posterLandscape'] ?: '',
-                tags: [], casts: [], duration: $item['duration'],
-                description:$item['overview']['descriptionMm']
+                id: $item['id'],
+                contentId: '',
+                type: $item['type'],
+                titleEn: $item['titleEn'],
+                titleMm: $item['titleMm'],
+                posterPortrait: $item['posterPortrait'] ?: '',
+                posterLandscape: $item['posterLandscape'] ?: '',
+                tags: [],
+                casts: [],
+                duration: $item['duration'],
+                description: $item['overview']['descriptionMm']
             );
             if ($it->type == 'series') {
                 $it->contentId = $item['seriesId'];
@@ -116,9 +117,9 @@ class Item
                 $it->contentId = $item['contentId'];
             }
             $it->fileSize = [
-                'sd'=>$item['sdFileSize'],
-                'hd'=>$item['hdFileSize'],
-                'fullHd'=>$item['fullHdFileSize']
+                'sd' => $item['sdFileSize'],
+                'hd' => $item['hdFileSize'],
+                'fullHd' => $item['fullHdFileSize']
             ];
             foreach ($item['categories'] as $cat) {
                 $it->tags[] = $cat['nameMm'];
@@ -143,15 +144,59 @@ function home()
     $res = [];
     $re = [];
     $token = token();
-    $n = 1;
-    while (true) {
-        $re = json_decode(req("/display/v1/moviebuilder?pageNumber=".$n, headers:['Authorization: Bearer '.$token]), true)["value"];
-        $re1 = 
-        
-        $res[] = $re;
-        $n++;
-    } while (count($re) != 0);
-    echo json_encode($res);
+    foreach (['movie', 'series'] as $con) {
+        $n = 1;
+        while (true) {
+            $re = json_decode(req("/display/v1/{$con}builder?pageNumber=$n", headers: ['Authorization: Bearer ' . $token]), true)["value"];
+            if (count($re) == 0)
+                break;
+            foreach ($re as $r) {
+                $res[] = $r;
+            }
+            $n++;
+        }
+    }
+    return $res;
 }
 
-home();
+function unavailable() {
+    echo json_encode(['details' => 'Unavailable']);
+}
+
+if (isset($_GET['m'])) {
+    switch ($_GET['m']) {
+        case 'home': {
+            echo json_encode(home(), JSON_UNESCAPED_UNICODE);
+            break;
+        }
+
+        case 'list': {
+            if (!isset($_GET['id']) and !isset($_GET['pn'])) {
+                unavailable();
+                break;
+            }
+            $token = token();
+            $id = $_GET['id'];
+            $pn = (int) $_GET['pn'];
+            $res = json_decode(req("/display/v1/playlistDetail?id={$id}&pageNumber={$pn}", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+            echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            break;
+        }
+
+        case 'content': {
+            if (!isset($_GET['type']) and !isset($_GET['id'])) {
+                unavailable();
+                break;
+            }
+            $token = token();
+            $id = $_GET['id'];
+            if ($_GET['type'] == 'movie') {
+                $res = json_decode(req("/revenue/url?type=movie&contentId={$id}&isPremiumUser=true&isPremiumContent=true&source=mobile", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+                echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            }
+            break;
+        }
+    }
+} else {
+    unavailable();
+}
