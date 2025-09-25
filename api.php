@@ -133,12 +133,6 @@ class Item
     }
 }
 
-/*
-if (isset($_SERVER['PATH_INFO']) and $_SERVER['PATH_INFO'] = '/all') {
-    echo json_encode(Item::all(), JSON_UNESCAPED_UNICODE);
-}
-*/
-
 function home()
 {
     $res = [];
@@ -168,11 +162,14 @@ $token = token();
 if (isset($_GET['m'])) {
     
     switch ($_GET['m']) {
+
+        # ?m=home
         case 'home': {
             echo json_encode(home(), JSON_UNESCAPED_UNICODE);
             break;
         }
 
+        # ?m=list&id=id&pn1
         case 'list': {
             if (!isset($_GET['id']) and !isset($_GET['pn'])) {
                 unavailable();
@@ -185,6 +182,7 @@ if (isset($_GET['m'])) {
             break;
         }
 
+        # ?m=detail&type=movie|series&id=id
         case 'detail': {
             if (!isset($_GET['type']) and !isset($_GET['id'])) {
                 unavailable();
@@ -203,6 +201,7 @@ if (isset($_GET['m'])) {
             break;
         }
 
+        # ?m=season&id=id
         case 'season': {
             if (!isset($_GET['id'])) {
                 unavailable();
@@ -214,6 +213,7 @@ if (isset($_GET['m'])) {
             break;
         }
 
+        # ?m=eps&id=id
         case 'eps': {
             if (!isset($_GET['id'])) {
                 unavailable();
@@ -225,6 +225,7 @@ if (isset($_GET['m'])) {
             break;
         }
 
+        # ?m=content&type=movie|series&id=id
         case 'content': {
             if (!isset($_GET['type']) and !isset($_GET['id'])) {
                 unavailable();
