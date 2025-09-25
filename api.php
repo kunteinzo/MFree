@@ -163,7 +163,10 @@ function unavailable() {
     echo json_encode(['details' => 'Unavailable']);
 }
 
+$token = token();
+
 if (isset($_GET['m'])) {
+    
     switch ($_GET['m']) {
         case 'home': {
             echo json_encode(home(), JSON_UNESCAPED_UNICODE);
@@ -175,10 +178,49 @@ if (isset($_GET['m'])) {
                 unavailable();
                 break;
             }
-            $token = token();
             $id = $_GET['id'];
             $pn = (int) $_GET['pn'];
             $res = json_decode(req("/display/v1/playlistDetail?id={$id}&pageNumber={$pn}", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+            echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            break;
+        }
+
+        case 'detail': {
+            if (!isset($_GET['type']) and !isset($_GET['id'])) {
+                unavailable();
+                break;
+            }
+            $id = $_GET['id'];
+            if ($_GET['type'] == 'movie') {
+                $res = json_decode(req("/content/v1/MovieDetail/$id", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+                echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            } elseif ($_GET['type'] == 'series') {
+                $res = json_decode(req("/content/v1/SeriesDetail/$id", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+                echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            } else {
+                unavailable();
+            }
+            break;
+        }
+
+        case 'season': {
+            if (!isset($_GET['id'])) {
+                unavailable();
+                break;
+            }
+            $id = $_GET['id'];
+            $res = json_decode(req("/content/v1/Seasons?&filter=seriesId+eq+{$id}&select=nameMm%2CnameEn%2Cid", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+            echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            break;
+        }
+
+        case 'eps': {
+            if (!isset($_GET['id'])) {
+                unavailable();
+                break;
+            }
+            $id = $_GET['id'];
+            $res = json_decode(req("/content/v1/Episodes?&filter=status+eq+true+and+seasonId+eq+{$id}&orderby=sorting+desc&top=100&skip=0", headers: ["Authorization: Bearer {$token}"]), true)['value'];
             echo json_encode($res, JSON_UNESCAPED_UNICODE);
             break;
         }
@@ -188,13 +230,21 @@ if (isset($_GET['m'])) {
                 unavailable();
                 break;
             }
-            $token = token();
             $id = $_GET['id'];
             if ($_GET['type'] == 'movie') {
-                $res = json_decode(req("/revenue/url?type=movie&contentId={$id}&isPremiumUser=true&isPremiumContent=true&source=mobile", headers: ["Authorization: Bearer {$token}"]), true)['value'];
+                $res = json_decode(req("/revenue/url?type=movie&contentId={$id}&isPremiumUser=true&isPremiumContent=true&source=mobile", headers: ["Authorization: Bearer {$token}"]), true);
                 echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            } elseif ($_GET['type'] == 'series') {
+                $res = json_decode(req("/revenue/url?type=episodes&contentId={$id}&isPremiumUser=true&isPremiumContent=true&source=mobile", headers: ["Authorization: Bearer {$token}"]), true);
+                echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            } else {
+                unavailable();
             }
             break;
+        }
+
+        default: {
+            unavailable();
         }
     }
 } else {
